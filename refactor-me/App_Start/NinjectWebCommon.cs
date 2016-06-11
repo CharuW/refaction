@@ -66,6 +66,7 @@ namespace refactor_me.App_Start
         private static void RegisterServices(IKernel kernel)
         {
             kernel.Bind<IProductService>().To<ProductService>();
+            kernel.Bind<IProductOptionService>().To<ProductOptionService>();
             kernel.Bind<ISqlHelper>().To<SqlHelper>();
         }
     }

@@ -6,7 +6,9 @@ namespace refactor_me.Helpers
 {
     public interface ISqlHelper
     {
-        DataTable ExecuteCommand(string sql);
+        DataTable ExecuteReader(string sql);
+        void ExecuteNonQuery(string sql);
+
     }
 
     public class SqlHelper : ISqlHelper
@@ -21,7 +23,7 @@ namespace refactor_me.Helpers
             return new SqlConnection(connectionInfo);
         }
 
-        public DataTable ExecuteCommand(string sql)
+        public DataTable ExecuteReader(string sql)
         {
             if (_connection == null)
                 _connection = GetConnection();
@@ -35,6 +37,16 @@ namespace refactor_me.Helpers
             _connection.Close();
 
             return dataTable;
+        }
+
+        public void ExecuteNonQuery(string sql)
+        {
+            if (_connection == null)
+                _connection = GetConnection();
+
+            _connection.Open();
+            var cmd = new SqlCommand(sql, _connection);
+            cmd.ExecuteNonQuery();
         }
 
         private SqlConnection GetConnection()

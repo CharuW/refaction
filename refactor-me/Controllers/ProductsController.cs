@@ -11,9 +11,12 @@ namespace refactor_me.Controllers
     public class ProductsController : ApiController
     {
         private IProductService _productService;
-        public ProductsController(IProductService productService)
+        private IProductOptionService _productOptionService;
+
+        public ProductsController(IProductService productService, IProductOptionService productOptionService)
         {
             _productService = productService;
+            _productOptionService = productOptionService;
         }
 
         [Route]
@@ -27,7 +30,6 @@ namespace refactor_me.Controllers
         [HttpGet]
         public List<Product> SearchByName(string name)
         {
-            //return new Products(name);
             return _productService.GetProductsWithName(name);
         }
 
@@ -35,60 +37,48 @@ namespace refactor_me.Controllers
         [HttpGet]
         public Product GetProduct(Guid id)
         {
-            var product = new Product(id);
-            if (product.IsNew)
+            var product = _productService.GetProduct(id);
+            if (product == null)
                 throw new HttpResponseException(HttpStatusCode.NotFound);
-
             return product;
         }
 
         [Route]
         [HttpPost]
-        public void Create(Product product)
+        public bool Create(Product product)
         {
-            product.Save();
+            return _productService.SaveProduct(product);
         }
 
         [Route("{id}")]
         [HttpPut]
-        public void Update(Guid id, Product product)
+        public bool Update(Guid id, Product product)
         {
-            var orig = new Product(id)
-            {
-                Name = product.Name,
-                Description = product.Description,
-                Price = product.Price,
-                DeliveryPrice = product.DeliveryPrice
-            };
-
-            if (!orig.IsNew)
-                orig.Save();
+            return _productService.SaveProduct(product);
         }
 
         [Route("{id}")]
         [HttpDelete]
-        public void Delete(Guid id)
+        public bool Delete(Guid id)
         {
-            var product = new Product(id);
-            product.Delete();
+            return _productService.DeleteProduct(id);
         }
 
         [Route("{productId}/options")]
         [HttpGet]
-        public ProductOptions GetOptions(Guid productId)
+        public List<ProductOption> GetOptions(Guid productId)
         {
-            return new ProductOptions(productId);
+            return _productOptionService.GetProductOptions(productId);
         }
 
         [Route("{productId}/options/{id}")]
         [HttpGet]
         public ProductOption GetOption(Guid productId, Guid id)
         {
-            var option = new ProductOption(id);
-            if (option.IsNew)
+            var productOption = _productOptionService.GetProductOption(id);
+            if (productOption == null)
                 throw new HttpResponseException(HttpStatusCode.NotFound);
-
-            return option;
+            return productOption;     
         }
 
         [Route("{productId}/options")]
@@ -115,10 +105,9 @@ namespace refactor_me.Controllers
 
         [Route("{productId}/options/{id}")]
         [HttpDelete]
-        public void DeleteOption(Guid id)
+        public bool DeleteOption(Guid id)
         {
-            var opt = new ProductOption(id);
-            opt.Delete();
+            return _productOptionService.DeleteProductOption(id);         
         }
     }
 }
