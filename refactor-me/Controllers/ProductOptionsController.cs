@@ -16,18 +16,18 @@ namespace refactor_me.Controllers
             _productOptionService = productOptionService;
         }
 
-        [Route("api/ProductOptions/GetOptions")]
+        [Route("api/ProductOptions/GetOptions/{productId}")]
         [HttpGet]
-        public List<ProductOption> GetOptions([FromUri]Guid productId)
+        public List<ProductOption> GetOptions(Guid productId)
         {
             return _productOptionService.GetProductOptions(productId);
         }
 
-        [Route("api/ProductOptions/GetOption")]
+        [Route("api/ProductOptions/GetOption/{id}/{productId}")]
         [HttpGet]
-        public ProductOption GetOption([FromUri]Guid productId, [FromUri]Guid id)
+        public ProductOption GetOption(Guid id, Guid productId)
         {
-            var productOption = _productOptionService.GetProductOption(id);
+            var productOption = _productOptionService.GetProductOption(id, productId);
             if (productOption == null)
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             return productOption;     
@@ -40,11 +40,11 @@ namespace refactor_me.Controllers
             return _productOptionService.SaveProductOption(option);
         }
 
-        [Route("api/ProductOptions/DeleteOption")]
+        [Route("api/ProductOptions/DeleteOption/{id}/{productId}")]
         [HttpDelete]
-        public bool DeleteOption([FromUri]Guid id)
+        public bool DeleteOption(Guid id, Guid productId)
         {
-            return _productOptionService.DeleteProductOption(id);         
+            return _productOptionService.DeleteProductOption(id, productId);         
         }
     }
 }

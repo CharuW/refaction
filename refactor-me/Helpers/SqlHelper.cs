@@ -17,12 +17,6 @@ namespace refactor_me.Helpers
 
         private SqlConnection _connection;
 
-        public static SqlConnection NewConnection()
-        {
-            var connectionInfo = ConnectionString.Replace("{DataDirectory}", HttpContext.Current.Server.MapPath("~/App_Data"));
-            return new SqlConnection(connectionInfo);
-        }
-
         public DataTable ExecuteReader(string sql)
         {
             if (_connection == null)
@@ -47,6 +41,7 @@ namespace refactor_me.Helpers
             _connection.Open();
             var cmd = new SqlCommand(sql, _connection);
             cmd.ExecuteNonQuery();
+            _connection.Close();
         }
 
         private SqlConnection GetConnection()

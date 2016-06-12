@@ -3,19 +3,16 @@ using refactor_me.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Text;
-using System.Web;
 
 namespace refactor_me.Services
 {
     public interface IProductOptionService
     {
         List<ProductOption> GetProductOptions(Guid productId);
-        ProductOption GetProductOption(Guid id);
-        bool DeleteProductOption(Guid id);
+        ProductOption GetProductOption(Guid id, Guid productId);
+        bool DeleteProductOption(Guid id, Guid productId);
         bool SaveProductOption(ProductOption productOption);
-
     }
 
     public class ProductOptionService : IProductOptionService
@@ -50,9 +47,9 @@ namespace refactor_me.Services
             return productOptions;
         }
 
-        public ProductOption GetProductOption(Guid id)
+        public ProductOption GetProductOption(Guid id, Guid productId)
         {
-            var sql = $"select * from productoption where Id = '{id}'";
+            var sql = $"select * from productoption where Id = '{id}' and ProductId = '{productId}'";
             var table = _sqlHelper.ExecuteReader(sql);
 
             var productOptions = GetProductOptions(table);
@@ -64,6 +61,7 @@ namespace refactor_me.Services
         {
             try
             {
+                if (productOption.Id == Guid.Empty) productOption.Id = Guid.NewGuid();
                 var sb = new StringBuilder();
                 sb.AppendFormat("if not exists (select * from productoption where Id = '{0}' and ProductId = '{1}')", 
                                 productOption.Id, productOption.ProductId);
@@ -86,11 +84,11 @@ namespace refactor_me.Services
             }
         }
 
-        public bool DeleteProductOption(Guid id)
+        public bool DeleteProductOption(Guid id, Guid productId)
         {
             try
             {
-                var sql = $"delete from productoption where Id = '{id}'";
+                var sql = $"delete from productoption where Id = '{id}' and ProductId = '{productId}'";
                 _sqlHelper.ExecuteNonQuery(sql);
                 return true;
             }

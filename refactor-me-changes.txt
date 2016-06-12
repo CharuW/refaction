@@ -1,0 +1,45 @@
+***Changes made to the refactor-me project***
+1) Moved all the endpoints associated with ProductOption to a separate controller i.e. ProductOptionsController. 
+This is because Product and ProductOption are essentially two different entitities and hence their CRUD operations
+need to be specified in different controllers. The ProductsController has been renamed to ProductController to be consistent
+with Product model and ProductService.
+
+2) Deleted Products and ProductOptions model because these essentially represented a list of Product models and 
+ProductOption models respectively and hence seemed unnecessary. All GET endpoints that were previously returning
+the type Products or ProductOptions now return a List<Product> or List<ProductOption>.
+
+3) Stripped out all the logic of loading and saving entities from the controllers and models into equivalent services 
+i.e. ProductService and ProductOptionService. These implement the IProductService and IProductOptionService interfaces
+respectively and means that if we are to test logic that uses these services, we can mock out their implementations.
+Resultantly, the models just contain properties and the controllers pass on the responsibility to services to deal with
+loading and saving of entities.
+
+4) The Product and ProductOption services use a SqlHelper class (previously called Helpers). This class purely deals with 
+managing database connections and executing the sql queries. It returns the result set from the sql query to the service as 
+System.Data.DataTable as opposed to a SqlDataReader because again, the SqlHelper class can be mocked out for testing purposes. 
+The SqlHelper class creates ONE connection to the database as opposed to spawning a new connection per sql query. 
+It ensures that after executing the query, the connection is closed. 
+
+5) Using Ninject(as a NuGet Package) for dependency injection purposes. The controllers have the relevant service injected
+into them via binding the service interface to its implementation in RegisterServices of NinjectWebCommon.cs.
+
+6) Each of the endpoints in the controllers have an explicit route specified which looks along the lines of 'api/Product/GetProducts'
+or 'api/Product/SaveProduct', which I believe is better for readability purposes. Moreover, a single SaveProduct or SaveProductOption
+call handles both the insert and update case so a separate update endpoint is redundant. As part of this change, I have removed the 
+IsNew property from Product and ProductOption model because we determine whether to do an insert or update using sql i.e. 
+if not exists(select .....)
+begin 
+	insert
+end 
+else begin
+	update
+end
+
+
+
+
+ 
+
+
+
+

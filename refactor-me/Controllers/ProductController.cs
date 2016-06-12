@@ -25,9 +25,9 @@ namespace refactor_me.Controllers
             return _productService.GetProducts();
         }
 
-        [Route("api/Product/GetProduct")]
+        [Route("api/Product/GetProduct/{id}")]
         [HttpGet]
-        public Product GetProduct([FromUri]Guid id)
+        public Product GetProduct(Guid id)
         {
             var product = _productService.GetProduct(id);
             if (product == null)
@@ -35,9 +35,9 @@ namespace refactor_me.Controllers
             return product;
         }
 
-        [Route("api/Product/GetProductByName")]
+        [Route("api/Product/GetProductByName/{name}")]
         [HttpGet]
-        public List<Product> GetProductByName([FromUri]string name)
+        public List<Product> GetProductByName(string name)
         {
             return _productService.GetProductsWithName(name);
         }
@@ -49,9 +49,9 @@ namespace refactor_me.Controllers
             return _productService.SaveProduct(product);
         }
 
-        [Route("api/Product/DeleteProduct")]
+        [Route("api/Product/DeleteProduct/{id}")]
         [HttpDelete]
-        public bool DeleteProduct([FromUri]Guid id)
+        public bool DeleteProduct(Guid id)
         {
             return _productService.DeleteProduct(id);
         }

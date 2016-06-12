@@ -75,14 +75,18 @@ namespace refactor_me.Services
         {
             try
             {
+                if (product.Id == Guid.Empty) product.Id = Guid.NewGuid();
                 var sb = new StringBuilder();
-                sb.AppendFormat("if not exists (select * from product where Id = '{0}')", product.Id.ToString());
+                sb.AppendFormat("if not exists (select * from product where Id = '{0}')", product.Id);
                 sb.AppendLine();
                 sb.AppendLine("begin insert into product (Id, Name, Description, Price, DeliveryPrice)");
-                sb.AppendFormat("values('{0}', '{1}', '{2}', {3}, {4}) end", product.Id, product.Name, product.Description, product.Price, product.DeliveryPrice);
+                sb.AppendFormat("values('{0}', '{1}', '{2}', {3}, {4}) end", product.Id, product.Name, 
+                        product.Description, product.Price, product.DeliveryPrice);
                 sb.AppendLine();
-                sb.AppendFormat("else begin update product set Name = '{0}', Description = '{1}', ", product.Name, product.Description);
-                sb.AppendFormat("Price = {0}, DeliveryPrice = {1} where Id = '{2}' end", product.Price, product.DeliveryPrice, product.Id.ToString());
+                sb.AppendFormat("else begin update product set Name = '{0}', Description = '{1}', ", 
+                        product.Name, product.Description);
+                sb.AppendFormat("Price = {0}, DeliveryPrice = {1} where Id = '{2}' end", 
+                        product.Price, product.DeliveryPrice, product.Id);
 
 
                 _sqlHelper.ExecuteNonQuery(sb.ToString());
@@ -103,7 +107,7 @@ namespace refactor_me.Services
                 _sqlHelper.ExecuteNonQuery(sql);
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return false;
             }
