@@ -1,7 +1,8 @@
 ***Changes made to the refactor-me project***
 1) Moved all the endpoints associated with ProductOption to a separate controller i.e. ProductOptionsController. 
 This is because Product and ProductOption are essentially two different entitities and hence their CRUD operations
-need to be specified in different controllers. The ProductsController has been renamed to ProductController to be consistent
+need to be specified in different controllers. This means that the routes for the endpoints in ProductOptionsController
+have changed. Also, the ProductsController has been renamed to ProductController to be consistent
 with Product model and ProductService.
 
 2) Deleted Products and ProductOptions model because these essentially represented a list of Product models and 
