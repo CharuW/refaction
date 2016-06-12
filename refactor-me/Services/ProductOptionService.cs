@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Web;
 
 namespace refactor_me.Services
@@ -13,6 +14,8 @@ namespace refactor_me.Services
         List<ProductOption> GetProductOptions(Guid productId);
         ProductOption GetProductOption(Guid id);
         bool DeleteProductOption(Guid id);
+        bool SaveProductOption(ProductOption productOption);
+
     }
 
     public class ProductOptionService : IProductOptionService
@@ -55,6 +58,32 @@ namespace refactor_me.Services
             var productOptions = GetProductOptions(table);
             if (productOptions.Count == 0) return null;
             return productOptions[0];
+        }
+
+        public bool SaveProductOption(ProductOption productOption)
+        {
+            try
+            {
+                var sb = new StringBuilder();
+                sb.AppendFormat("if not exists (select * from productoption where Id = '{0}' and ProductId = '{1}')", 
+                                productOption.Id, productOption.ProductId);
+                sb.AppendLine();
+                sb.AppendLine("begin insert into productoption (Id, ProductId, Name, Description)");
+                sb.AppendFormat("values('{0}', '{1}', '{2}', '{3}') end", productOption.Id, productOption.ProductId, 
+                                productOption.Name, productOption.Description);
+                sb.AppendLine();
+                sb.AppendFormat("else begin update productoption set Name = '{0}', Description = '{1}' ", 
+                                productOption.Name, productOption.Description);
+                sb.AppendFormat("where Id = '{0}' and ProductId = '{1}' end", productOption.Id, productOption.ProductId);
+
+
+                _sqlHelper.ExecuteNonQuery(sb.ToString());
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool DeleteProductOption(Guid id)
